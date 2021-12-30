@@ -1,3 +1,2 @@
 eclipse.preferences.version=1
-encoding//src/rest/Framework.java=UTF-8
-encoding//src/rest/Server.java=UTF-8
+encoding//src/http/Framework.java=UTF-8

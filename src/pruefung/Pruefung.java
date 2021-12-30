@@ -15,13 +15,13 @@ public class Pruefung implements JSONCodec{
     private String ort;
 
     MessageFormat messageFormat = new MessageFormat(
-            "'{'\n\t\"modulNummer\": {0}," +
-                    "\n\t\"modulBezeichnung\": {1}," +
-                    "\n\t\"tag\": {2}," +
-                    "\n\t\"monat\": {3}," +
-                    "\n\t\"jahr\": {4}," +
-                    "\n\t\"ort\": {5}," +
-                    "\n'}'"
+            "'{'\"modulNummer\": {0}," +
+                    "\"modulBezeichnung\": {1}," +
+                    "\"tag\": {2}," +
+                    "\"monat\": {3}," +
+                    "\"jahr\": {4}," +
+                    "\"ort\": {5}" +
+                    "'}'"
     );
 
     
@@ -36,35 +36,20 @@ public class Pruefung implements JSONCodec{
     }
 
     public Pruefung() {
+    	/*String test = "'{'\"modulNummer\": {0}, " +
+                "\"modulBezeichnung\": {1}, " +
+                "\"tag\": {2}, " +
+                "\"monat\": {3}, " +
+                "\"jahr\": {4}, " +
+                "\"ort\": {5}'}'";
+    	System.out.println(test);*/
     }
-
-    @Route(methode = "create")
-    public void pruefungAnlegen(String nachricht){
-    	System.out.println("create: " + nachricht + " aufgerufen");
-
-    }
-    
-    @Route(methode = "read")
-    public void pruefungAnzeigen(String nachricht) {
-		System.out.println("read: " + nachricht + " aufgerufen");
-	}
-    
-    @Route(methode = "update")
-	public void pruefungAktualisieren(String nachricht) {
-		System.out.println("update: " + nachricht + " aufgerufen");
-	}
-
-	@Route(methode = "delete")
-	public void pruefungLoeschen(String nachricht) {
-		System.out.println("delete: " + nachricht + " aufgerufen");
-	}
-
 
     @Override
     public String toJson(){
 
         try {
-            Object[] testArgs = {modulNummer, modulBezeichnung, tag, monat, jahr, ort };
+            Object[] testArgs = {modulNummer, modulBezeichnung, Integer.toString(tag), Integer.toString(monat), Integer.toString(jahr), ort };
             String jsonString = messageFormat.format(testArgs);
             return jsonString;
         } catch (IllegalArgumentException e) {
@@ -109,6 +94,16 @@ public class Pruefung implements JSONCodec{
         this.modulBezeichnung = modulBezeichnung;
     }
 
+    /*public static void main(String[] args) throws JSONCodec.JSONCodecException {
+        Pruefung pruef = new Pruefung();
+        pruef.toJson();
+        String test = "{\"modulNummer\": 2,\"modulBezeichnung\": Htwsaar,\"tag\": 2,\"monat\": 3,\"jahr\": 5,\"ort\": htwsaar}" ;
+        System.out.println(test);
+        pruef.fromJson(test);
+        System.out.println(pruef.jahr);
+        System.out.println(pruef.modulBezeichnung);
+        
+    }*/
     // setters
 }
 

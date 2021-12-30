@@ -1,0 +1,2 @@
+{"modulNummer": 2789,"modulBezeichnung": Mathematik,"tag": 2000,"monat": 5,"jahr": 2021,"ort": HTW-SAAR}
+{"modulNummer": 5,"modulBezeichnung": Informatik,"tag": 3,"monat": 5,"jahr": 2003,"ort": Bafoussam}

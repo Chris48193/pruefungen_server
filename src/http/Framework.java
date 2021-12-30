@@ -1,4 +1,4 @@
-package rest;
+package http;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,14 +14,14 @@ class Kontext {
 		this.strategie = s;
 	}
 
-	public void mache(Anfrage n) {
-		strategie.mache(n);
+	public String mache(Anfrage n) {
+		return strategie.mache(n);
 	}
 }
 
 interface Strategie {
 
-	void mache(Anfrage n);
+	String mache(Anfrage n);
 
 }
 
@@ -34,7 +34,7 @@ class Router implements Strategie {
 	}
 
 	@Override
-	public void mache(Anfrage n) {
+	public String mache(Anfrage n) {
 		/*
 		 * TODO Rufe die richtige Methode aus der Implementierung, hier Beispiel, auf.
 		 * Das ist die Methode, die mit der Methode in der Anfrage annotiert ist. Als
@@ -44,7 +44,7 @@ class Router implements Strategie {
 			for (Method method : konkreteImplementierung.getMethods()) {
 				Route route = method.getAnnotation(Route.class);
 				if (route != null && route.methode().equals(n.methode)) {
-					method.invoke(konkreteImplementierung.getDeclaredConstructor().newInstance(), n.nachricht);
+					return (String)method.invoke(konkreteImplementierung.getDeclaredConstructor().newInstance(), n.nachricht);
 				}
 			}
 		} catch (InstantiationException | NoSuchMethodException | SecurityException e) {
@@ -56,6 +56,7 @@ class Router implements Strategie {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 }
@@ -97,7 +98,7 @@ class ServerApplication {
 	 * update: Notizen aufgerufen
 	 * delete: Eintrag aufgerufen
 	 */
-	public static void run(Class<?> cls) {
+	public static String run(Class<?> cls, String methode, String body) {
 		Kontext k = new Kontext();
 		Strategie s = new Router(cls);
 		k.setStrategie(s);
@@ -105,15 +106,8 @@ class ServerApplication {
 		//empfange Nachrichten / Anfragen / Requests 
 		//und leite diese weiter an die Applikation. 
 		//eine Anfrage besteht aus einer Methode und einer Nachricht.  
-		Anfrage n = new Anfrage("create", "Haus");
-		k.mache(n);
-		n = new Anfrage("read", "Buch");
-		k.mache(n);
-		n = new Anfrage("update", "Notizen");
-		k.mache(n);
-		n = new Anfrage("delete", "Eintrag");
-		k.mache(n);
-
+		Anfrage n = new Anfrage(methode, body);
+		return k.mache(n);
 	}
 	
 }
