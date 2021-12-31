@@ -53,12 +53,40 @@ public class CustomHttpServer {
 			String query = exchange.getRequestURI().getQuery();
 			String body = new String(exchange.getRequestBody().readAllBytes());
 			
-			//String response2 = ServerApplication.run(PruefungsListe.class, method, body);
+			String response;
 
-			String response = MessageFormat.format(
-					"{0} Methode mit URI \"{1}\" und Query \"{2}\" und Body \"{3}\" erhalten.", method, uri, query,
+			// String response = MessageFormat.format(
+			// 		"{0} Methode mit URI \"{1}\" und Query \"{2}\" und Body \"{3}\" erhalten.", method, uri, query,
+			// 		ServerApplication.run(PruefungsListe.class, method, body));
+			// System.out.println(response);
+
+			// Addapt response messages
+			if(method.equals("GET")) {
+				response = MessageFormat.format(
+					"Pruefung mit Modulnummer  \"{0}\" : {1}.", body,
 					ServerApplication.run(PruefungsListe.class, method, body));
-			System.out.println(response);
+
+			} else if (method.equals("DELETE")) {
+				response = MessageFormat.format(
+					"Pruefung mit Modulnummer  \"{0}\" geloescht: {1}.", body,
+					ServerApplication.run(PruefungsListe.class, method, body));
+
+			} else if (method.equals("PUT")) {
+				response = MessageFormat.format(
+					"Eine Pruefung wurde im Datenbank hinzugefuegt: {0}.",
+					ServerApplication.run(PruefungsListe.class, method, body));
+
+			} else if (method.equals("UPADATE")) {
+				response = MessageFormat.format(
+					"Diese Pruefung wurde aktualisiert: {1}.", body,
+					ServerApplication.run(PruefungsListe.class, method, body));
+
+			} else  {
+				response = MessageFormat.format(
+							"{0} Methode mit URI \"{1}\" und Query \"{2}\" und Body \"{3}\" erhalten.", method, uri, query,
+							ServerApplication.run(PruefungsListe.class, method, body));
+					System.out.println(response);
+			}
 
 			exchange.getResponseHeaders().add("Content-Type", "text/html");
 			exchange.sendResponseHeaders(OK, response.getBytes().length);

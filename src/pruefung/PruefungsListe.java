@@ -43,29 +43,30 @@ public class PruefungsListe {
     }
 
     @Route(methode = "PUT")
-	public boolean pruefungHinzufuegen(String json) {
+	public String pruefungHinzufuegen(String json) {
 		try {
 			Pruefung pruefung = new Pruefung();
 			pruefung.fromJson(json);
 			pruefungen.add(pruefung);
 			pruefungenSpeichern();
-			return true;
+			return pruefung.toJson();
 		} catch(JSONCodecException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 
 	@Route(methode = "DELETE")
-	public boolean pruefungLoeschen(String modulNummer) {
+	public String pruefungLoeschen(String modulNummer) {
 		int index = getPruefungIndex(modulNummer);
 		//System.out.println("Index: " + index + " ModulNr: " + modulNummer);
 		if (index != -1) {
+			Pruefung pruef = pruefungen.get(index);
 			pruefungen.remove(index);
 			pruefungenSpeichern();
-			return true;
+			return pruef.toJson();
 		} 
-		return false;
+		return "Keine Pruefung mit Modulnummer " + modulNummer + "gefunden!";
 	}
 	
 	public int getPruefungIndex(String modulNummer) {
@@ -81,7 +82,7 @@ public class PruefungsListe {
 	}
 
 	@Route(methode = "UPDATE")
-	public boolean pruefungAktualisieren(String json) {
+	public String pruefungAktualisieren(String json) {
 		try {
 			Pruefung pruefung = new Pruefung();
 			pruefung.fromJson(json);
@@ -89,16 +90,17 @@ public class PruefungsListe {
 			if (index != -1) {
 				pruefungen.set(index, pruefung);
 				pruefungenSpeichern();
-				return true;
+				return pruefung.toJson();
 			}
 		} catch(JSONCodecException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return "Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!";
 	}
 
 	@Route(methode = "GET")
 	public String pruefungAusgeben(String key) {
+		System.out.println("The key is: " + key);
 		int index = getPruefungIndex(key);
 		if (index != -1) {
 			return pruefungen.get(index).toJson();
