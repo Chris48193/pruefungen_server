@@ -46,7 +46,6 @@ class Router implements Strategie {
 				Route route = method.getAnnotation(Route.class);
 				Path path = method.getAnnotation(Path.class);
 				if ((route != null && route.methode().equals(n.methode)) && (path != null && path.value().equals(n.path))) {
-					System.out.println("Path: " + path  + "Methode: " + method.toString());
 					return (String)method.invoke(konkreteImplementierung.getDeclaredConstructor().newInstance(), n.nachricht);
 				}
 			}

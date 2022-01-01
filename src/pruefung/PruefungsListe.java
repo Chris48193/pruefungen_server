@@ -49,14 +49,21 @@ public class PruefungsListe {
 		try {
 			Pruefung pruefung = new Pruefung();
 			pruefung.fromJson(json);
-			pruefungen.add(pruefung);
-			pruefungenSpeichern();
-			return "{'message': 'Die Pruefung wurde im datenbank hinzugefuegt', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
-		} catch(JSONCodecException|IllegalArgumentException e) {
+			if (!pruefungExistiert(pruefung.getModulNummer())){
+				pruefungen.add(pruefung);
+				pruefungenSpeichern();
+				return "{'message': 'Die Pruefung wurde im datenbank hinzugefuegt', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
+			}
+			return "{'message': 'Eine Pruefung mit gleicher Modulnummer existiert schon. Die ModulNummer muss eindeutig sein!', 'status': 400}";	
+		} catch(JSONCodecException e) {
 			return "{'message': '" + e.getMessage() + "', 'status': 400 }";
 		} catch(IOException e) {
 			return "{'message': '" + e.getMessage() + "', 'status': 500 }";
 		}
+	}
+
+	public Boolean pruefungExistiert(String modulNummer) {
+		return getPruefungIndex(modulNummer) != -1 ? true : false; 
 	}
 
 	@Route(methode = "DELETE")
@@ -113,7 +120,6 @@ public class PruefungsListe {
 	@Route(methode = "GET")
 	@Path(value = "/get-pruefung")
 	public String pruefungAusgeben(String key) {
-		System.out.println("The key is: " + key);
 		int index = getPruefungIndex(key);
 		if (index != -1) {
 			return "{'message': " + pruefungen.get(index).toJson() + ", 'status': 200}";
