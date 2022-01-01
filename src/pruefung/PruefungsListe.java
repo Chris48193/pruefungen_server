@@ -49,13 +49,19 @@ public class PruefungsListe {
 		try {
 			Pruefung pruefung = new Pruefung();
 			pruefung.fromJson(json);
-			pruefungen.add(pruefung);
-			pruefungenSpeichern();
-			return "Diese Pruefung wurde im datenbank hinzugefuegt: " + pruefung.toJson();
+			if (!pruefungExistiert(pruefung.getModulNummer())){
+				pruefungen.add(pruefung);
+				pruefungenSpeichern();
+				return "Diese Pruefung wurde im datenbank hinzugefuegt: " + pruefung.toJson();
+			}
+			return "Eine Pruefung mit gleicher Modulnummer existiert schon. Die ModulNummer muss eindeutig sein!";	
 		} catch(JSONCodecException e) {
-			e.printStackTrace();
+			return e.getMessage();
 		}
-		return "Ein Problem ist beim Speichern dieser Pruefung getaucht!";
+	}
+
+	public Boolean pruefungExistiert(String modulNummer) {
+		return getPruefungIndex(modulNummer) != -1 ? true : false ; 
 	}
 
 	@Route(methode = "DELETE")
@@ -84,7 +90,7 @@ public class PruefungsListe {
 		return -1;
 	}
 
-	@Route(methode = "UPDATE")
+	@Route(methode = "PUT")
 	@Path(value = "/update-pruefung")
 	public String pruefungAktualisieren(String json) {
 		try {
@@ -98,17 +104,14 @@ public class PruefungsListe {
 			}
 			return "Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!";
 		} catch(JSONCodecException e) {
-			e.printStackTrace();
+			return e.getMessage();
 		}
-		return "Ein Problem ist beim Aktualisieren dieser Pruefung aufgetaucht!";
-		
 	}
 
 	
 	@Route(methode = "GET")
 	@Path(value = "/get-pruefung")
 	public String pruefungAusgeben(String key) {
-		System.out.println("The key is: " + key);
 		int index = getPruefungIndex(key);
 		if (index != -1) {
 			return MessageFormat.format("Die Pruefung mit modulnummer \"{0}\" : {1}" , key, pruefungen.get(index).toJson()) ;
@@ -143,14 +146,14 @@ public class PruefungsListe {
 	}
     
     public static void main(String[] args) {
-    	PruefungsListe pl = new PruefungsListe();
-    	pl.pruefungenAusgeben();
-    	pl.pruefungHinzufuegen("{\"modulNummer\": 9,\"modulBezeichnung\": Physik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Bafoussam}");
-    	pl.pruefungenAusgeben();
-    	pl.pruefungLoeschen("6");
-    	pl.pruefungenAusgeben();
-    	pl.pruefungAktualisieren("{\"modulNummer\": 9,\"modulBezeichnung\": Mechanik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Yaounde}");
-    	System.out.println(pl.pruefungAusgeben("2789"));
+    	//PruefungsListe pl = new PruefungsListe();
+    	// pl.pruefungenAusgeben();
+    	// pl.pruefungHinzufuegen("{\"modulNummer\": 9,\"modulBezeichnung\": Physik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Bafoussam}");
+    	// pl.pruefungenAusgeben();
+    	// pl.pruefungLoeschen("6");
+    	// pl.pruefungenAusgeben();
+    	// pl.pruefungAktualisieren("{\"modulNummer\": 9,\"modulBezeichnung\": Mechanik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Yaounde}");
+    	// System.out.println(pl.pruefungAusgeben("2789"));
     }  
 }
 

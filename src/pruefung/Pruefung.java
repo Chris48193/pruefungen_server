@@ -2,6 +2,7 @@ package pruefung;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -13,8 +14,20 @@ public class Pruefung implements JSONCodec{
     private int monat;
     private int jahr;
     private String ort;
+    private static final String[] MONATE = {
+        "Januar", "Februar" , "März", "April" , "Mai", "Juni" , "Juli", "August", "September" , "October" , "Dezember" 
+    };
 
-    MessageFormat messageFormat = new MessageFormat(
+    // Error messages
+    private static final String MODUL_NUMMER_ERROR = "Die Modulnummer darf nicht leer oder null sein." ;
+    private static final String MODUL_BEZEICHNUNG_ERROR = "Die Modulbezeichnung darf nicht leer oder null sein." ;
+    private static final String TAG_ERROR_MESSAGE = "Der Tag muss zwischen 1 und 31 sein.";
+    private static final String MONATE_ERROR_MESSAGE = "Der gegebene Monatsnummer muss zwischen 1 und 12 liegen!";
+    private static final String MODUL_ORT_MESSAGE = "Der gegebene Monatsnummer muss zwischen 1 und 12 liegen!";
+    private static final String JAHR_ERROR_MESSAGE = "Das Jahr muss zwischen 2022 und 2024 liegen!";
+
+
+    private MessageFormat messageFormat = new MessageFormat(
             "'{'\"modulNummer\": {0}," +
                     "\"modulBezeichnung\": {1}," +
                     "\"tag\": {2}," +
@@ -27,6 +40,13 @@ public class Pruefung implements JSONCodec{
     
     public Pruefung(String modulNummer, String modulBezeichnung,
                     int tag, int monat, int jahr, String ort) {
+        pruefen (!modulNummer.trim().isEmpty() && !modulNummer.trim().isBlank() && modulNummer.trim() != "" && modulNummer.trim() != null, MODUL_NUMMER_ERROR);
+        pruefen (!modulBezeichnung.trim().isEmpty() && !modulBezeichnung.trim().isBlank() && modulBezeichnung.trim() != "" && modulBezeichnung.trim() != null, MODUL_BEZEICHNUNG_ERROR);             
+        pruefen(tag >= 0 && tag <= 31, TAG_ERROR_MESSAGE);
+        pruefen(monat >= 1 && monat <= 12, MONATE_ERROR_MESSAGE);
+        pruefen(jahr > 2021 && jahr < 2025 , JAHR_ERROR_MESSAGE);
+        pruefen(!ort.trim().isEmpty() && !ort.trim().isBlank() && ort.trim() != "" && ort.trim() != null, MODUL_ORT_MESSAGE);
+        
         this.modulNummer = modulNummer;
         this.modulBezeichnung = modulBezeichnung;
         this.tag = tag;
@@ -35,14 +55,9 @@ public class Pruefung implements JSONCodec{
         this.ort = ort;
     }
 
+    
+
     public Pruefung() {
-    	/*String test = "'{'\"modulNummer\": {0}, " +
-                "\"modulBezeichnung\": {1}, " +
-                "\"tag\": {2}, " +
-                "\"monat\": {3}, " +
-                "\"jahr\": {4}, " +
-                "\"ort\": {5}'}'";
-    	System.out.println(test);*/
     }
 
     @Override
@@ -72,8 +87,25 @@ public class Pruefung implements JSONCodec{
             this.monat = Integer.parseInt((String)object[3]);
             this.jahr = Integer.parseInt((String)object[4]);
             this.ort = (String)object[5];
-        } catch (ParseException e) {
+
+            // Attributte ueberpruefen
+            pruefen (!modulNummer.trim().isEmpty() && !modulNummer.trim().isBlank() && modulNummer.trim() != "" && modulNummer.trim() != null, MODUL_NUMMER_ERROR);
+            pruefen (!modulBezeichnung.trim().isEmpty() && !modulBezeichnung.trim().isBlank() && modulBezeichnung.trim() != "" && modulBezeichnung.trim() != null, MODUL_BEZEICHNUNG_ERROR);             
+            pruefen(tag >= 0 && tag <= 31, TAG_ERROR_MESSAGE);
+            pruefen(monat >= 1 && monat <= 12, MONATE_ERROR_MESSAGE);
+            pruefen(jahr > 2021 && jahr < 2025 , JAHR_ERROR_MESSAGE);
+            pruefen(!ort.trim().isEmpty() && !ort.trim().isBlank() && ort.trim() != "" && ort.trim() != null, MODUL_ORT_MESSAGE);
+        
+        } catch (ParseException e ) {
             throw new JSONCodecException("ParseException: Falsches StringFormat!");
+        } catch (IllegalArgumentException e) {
+            throw new JSONCodecException("IllegalArgumentExeption: " + e.getMessage());
+        }
+    }
+
+    private void pruefen(Boolean bedingung, String errorMessage) {
+        if (!bedingung) {
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 
@@ -94,16 +126,5 @@ public class Pruefung implements JSONCodec{
         this.modulBezeichnung = modulBezeichnung;
     }
 
-    /*public static void main(String[] args) throws JSONCodec.JSONCodecException {
-        Pruefung pruef = new Pruefung();
-        pruef.toJson();
-        String test = "{\"modulNummer\": 2,\"modulBezeichnung\": Htwsaar,\"tag\": 2,\"monat\": 3,\"jahr\": 5,\"ort\": htwsaar}" ;
-        System.out.println(test);
-        pruef.fromJson(test);
-        System.out.println(pruef.jahr);
-        System.out.println(pruef.modulBezeichnung);
-        
-    }*/
-    // setters
 }
 
