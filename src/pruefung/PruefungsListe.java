@@ -51,25 +51,30 @@ public class PruefungsListe {
 			pruefung.fromJson(json);
 			pruefungen.add(pruefung);
 			pruefungenSpeichern();
-			return "Diese Pruefung wurde im datenbank hinzugefuegt: " + pruefung.toJson();
-		} catch(JSONCodecException e) {
-			e.printStackTrace();
+			return "{'message': 'Die Pruefung wurde im datenbank hinzugefuegt', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
+		} catch(JSONCodecException|IllegalArgumentException e) {
+			return "{'message': '" + e.getMessage() + "', 'status': 400 }";
+		} catch(IOException e) {
+			return "{'message': '" + e.getMessage() + "', 'status': 500 }";
 		}
-		return "Ein Problem ist beim Speichern dieser Pruefung getaucht!";
 	}
 
 	@Route(methode = "DELETE")
 	@Path("/delete-pruefung")
 	public String pruefungLoeschen(String modulNummer) {
-		int index = getPruefungIndex(modulNummer);
-		//System.out.println("Index: " + index + " ModulNr: " + modulNummer);
-		if (index != -1) {
-			Pruefung pruef = pruefungen.get(index);
-			pruefungen.remove(index);
-			pruefungenSpeichern();
-			return "Diese Pruefung wurde vom Datenbank geloescht: " + pruef.toJson();
-		} 
-		return "Keine Pruefung mit Modulnummer " + modulNummer + "gefunden!";
+		try {
+			int index = getPruefungIndex(modulNummer);
+			//System.out.println("Index: " + index + " ModulNr: " + modulNummer);
+			if (index != -1) {
+				Pruefung pruef = pruefungen.get(index);
+				pruefungen.remove(index);
+				pruefungenSpeichern();
+				return "{'message': 'Die Pruefung wurde vom Datenbank geloescht', 'status': 204 }";
+			} 
+			return "{'message': 'Keine Pruefung mit Modulnummer " + modulNummer + " gefunden!', 'status': 400}";
+		} catch(IOException e) {
+			return "{'message': '" + e.getMessage() + "', 'status': 500}";
+		}
 	}
 	
 	public int getPruefungIndex(String modulNummer) {
@@ -84,7 +89,7 @@ public class PruefungsListe {
 		return -1;
 	}
 
-	@Route(methode = "UPDATE")
+	@Route(methode = "PUT")
 	@Path(value = "/update-pruefung")
 	public String pruefungAktualisieren(String json) {
 		try {
@@ -94,14 +99,14 @@ public class PruefungsListe {
 			if (index != -1) {
 				pruefungen.set(index, pruefung);
 				pruefungenSpeichern();
-				return "Diese Pruefung wurde aktualisiert: " + pruefung.toJson();
+				return "{'message': 'Die Pruefung wurde aktualisiert', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
 			}
-			return "Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!";
+			return "{'message': 'Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!', status: 400}";
 		} catch(JSONCodecException e) {
-			e.printStackTrace();
+			return "{'message': '" + e.getMessage() + "', 'status': 400 }";
+		} catch(IOException e) {
+			return "{'message': '" + e.getMessage() + "', 'status': 500 }";
 		}
-		return "Ein Problem ist beim Aktualisieren dieser Pruefung aufgetaucht!";
-		
 	}
 
 	
@@ -111,12 +116,12 @@ public class PruefungsListe {
 		System.out.println("The key is: " + key);
 		int index = getPruefungIndex(key);
 		if (index != -1) {
-			return MessageFormat.format("Die Pruefung mit modulnummer \"{0}\" : {1}" , key, pruefungen.get(index).toJson()) ;
+			return "{'message': " + pruefungen.get(index).toJson() + ", 'status': 200}";
 		}
-		return "Pruefung nicht gefunden";
+		return "{'message': 'Pruefung nicht gefunden', 'status': 404}";
 	}
 	
-	public void pruefungenSpeichern() {
+	public void pruefungenSpeichern() throws IOException {
 		try {
 			File file = new File("./src/pruefung/pruefungen.txt");
 			FileWriter fr = new FileWriter(file);
@@ -125,7 +130,7 @@ public class PruefungsListe {
 			}
 			fr.close();
 		} catch(IOException e) {
-    		e.printStackTrace();
+    		throw new IOException(e.getMessage());
     	}	
 	}
 
@@ -137,12 +142,12 @@ public class PruefungsListe {
 			for(Pruefung pruefung: pruefungen) {
 				result += pruefung.toJson() + "\n";
 			}
-			return result;
+			return "{'message': {" + result + "}, 'status': 200}";
 		}
-		return "keine Pruefung wurde gefunden!";
+		return "{'message': 'Keine Pruefung wurde angelegt', 'status': 200}";
 	}
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
     	PruefungsListe pl = new PruefungsListe();
     	pl.pruefungenAusgeben();
     	pl.pruefungHinzufuegen("{\"modulNummer\": 9,\"modulBezeichnung\": Physik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Bafoussam}");
@@ -151,6 +156,6 @@ public class PruefungsListe {
     	pl.pruefungenAusgeben();
     	pl.pruefungAktualisieren("{\"modulNummer\": 9,\"modulBezeichnung\": Mechanik,\"tag\": 3,\"monat\": 5,\"jahr\": 2012,\"ort\": Yaounde}");
     	System.out.println(pl.pruefungAusgeben("2789"));
-    }  
+    }  */
 }
 

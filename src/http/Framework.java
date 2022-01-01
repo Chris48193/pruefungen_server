@@ -51,16 +51,16 @@ class Router implements Strategie {
 				}
 			}
 		} catch (InstantiationException | NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
+			return "{'message': '" + e.getMessage() + "', 'status': 500}";
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			return "{'message': '" + e.getMessage() + "', 'status': 500}";
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			return "{'message': '" + e.getMessage() + "', 'status': 500}";
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			return "{'message': '" + e.getMessage() + "', 'status': 500}";
 		}
 		System.out.println("No method found");
-		return "The specified uri for the action is incorrect";
+		return "{'message': 'Die angegebene uri ist nicht korrekt', 'status': 405}";
 	}
 
 }

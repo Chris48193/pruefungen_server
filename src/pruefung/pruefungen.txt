@@ -2,7 +2,7 @@
 {"modulNummer": 5,"modulBezeichnung": Informatik,"tag": 3,"monat": 5,"jahr": 2003,"ort": Bafoussam}
 {"modulNummer": neun,"modulBezeichnung": Mechanik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Yaounde}
 {"modulNummer": MOD-15,"modulBezeichnung": Mechanik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Yaounde}
-{"modulNummer": 9,"modulBezeichnung": Mechanik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Yaounde}
+{"modulNummer": 9,"modulBezeichnung": Robotik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Bafoussam}
 {"modulNummer": 9,"modulBezeichnung": Physik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Bafoussam}
 {"modulNummer": 9,"modulBezeichnung": Physik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Bafoussam}
 {"modulNummer": 9,"modulBezeichnung": Physik,"tag": 3,"monat": 5,"jahr": 2012,"ort": Bafoussam}

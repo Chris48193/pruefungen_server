@@ -27,7 +27,7 @@ public class CustomHttpServer {
 			server.start();
 			System.out.println("Web-Server auf Port " + port + " gestartet.");
 			System.out.println(
-					"Rufe Web-Server im Web-Browser auf mit http://localhost:" + port + "/MeineRessource?MeineFrage");
+					"Rufe Web-Server im Web-Browser auf mit http://localhost:" + port + "/");
 
 			System.out.println("Stoppe Web-Server durch irgendeine Eingabe");
 			Scanner sc = new Scanner(System.in);
