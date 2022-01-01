@@ -3,6 +3,7 @@ package http;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import pruefung.Path;
 import pruefung.Route;
 
 
@@ -43,7 +44,9 @@ class Router implements Strategie {
 		try {
 			for (Method method : konkreteImplementierung.getMethods()) {
 				Route route = method.getAnnotation(Route.class);
-				if (route != null && route.methode().equals(n.methode)) {
+				Path path = method.getAnnotation(Path.class);
+				if ((route != null && route.methode().equals(n.methode)) && (path != null && path.value().equals(n.path))) {
+					System.out.println("Path: " + path  + "Methode: " + method.toString());
 					return (String)method.invoke(konkreteImplementierung.getDeclaredConstructor().newInstance(), n.nachricht);
 				}
 			}
@@ -56,7 +59,8 @@ class Router implements Strategie {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return null;
+		System.out.println("No method found");
+		return "The specified uri for the action is incorrect";
 	}
 
 }
@@ -65,10 +69,12 @@ class Anfrage {
 
 	public String methode;
 	public String nachricht;
+	public String path;
 
-	public Anfrage(String methode, String nachricht) {
+	public Anfrage(String methode, String nachricht, String path) {
 		this.methode = methode;
 		this.nachricht = nachricht;
+		this.path = path;
 	}
 
 }
@@ -98,7 +104,7 @@ class ServerApplication {
 	 * update: Notizen aufgerufen
 	 * delete: Eintrag aufgerufen
 	 */
-	public static String run(Class<?> cls, String methode, String body) {
+	public static String run(Class<?> cls, String methode, String body, String path) {
 		Kontext k = new Kontext();
 		Strategie s = new Router(cls);
 		k.setStrategie(s);
@@ -106,7 +112,7 @@ class ServerApplication {
 		//empfange Nachrichten / Anfragen / Requests 
 		//und leite diese weiter an die Applikation. 
 		//eine Anfrage besteht aus einer Methode und einer Nachricht.  
-		Anfrage n = new Anfrage(methode, body);
+		Anfrage n = new Anfrage(methode, body, path);
 		return k.mache(n);
 	}
 	

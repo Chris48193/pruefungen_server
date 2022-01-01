@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import pruefung.JSONCodec.JSONCodecException;
+
 
 public class PruefungsListe {
 	
@@ -43,20 +44,22 @@ public class PruefungsListe {
     }
 
     @Route(methode = "PUT")
+	@Path(value = "/add-pruefung")
 	public String pruefungHinzufuegen(String json) {
 		try {
 			Pruefung pruefung = new Pruefung();
 			pruefung.fromJson(json);
 			pruefungen.add(pruefung);
 			pruefungenSpeichern();
-			return pruefung.toJson();
+			return "Diese Pruefung wurde im datenbank hinzugefuegt: " + pruefung.toJson();
 		} catch(JSONCodecException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return "Ein Problem ist beim Speichern dieser Pruefung getaucht!";
 	}
 
 	@Route(methode = "DELETE")
+	@Path("/delete-pruefung")
 	public String pruefungLoeschen(String modulNummer) {
 		int index = getPruefungIndex(modulNummer);
 		//System.out.println("Index: " + index + " ModulNr: " + modulNummer);
@@ -64,7 +67,7 @@ public class PruefungsListe {
 			Pruefung pruef = pruefungen.get(index);
 			pruefungen.remove(index);
 			pruefungenSpeichern();
-			return pruef.toJson();
+			return "Diese Pruefung wurde vom Datenbank geloescht: " + pruef.toJson();
 		} 
 		return "Keine Pruefung mit Modulnummer " + modulNummer + "gefunden!";
 	}
@@ -82,6 +85,7 @@ public class PruefungsListe {
 	}
 
 	@Route(methode = "UPDATE")
+	@Path(value = "/update-pruefung")
 	public String pruefungAktualisieren(String json) {
 		try {
 			Pruefung pruefung = new Pruefung();
@@ -90,20 +94,24 @@ public class PruefungsListe {
 			if (index != -1) {
 				pruefungen.set(index, pruefung);
 				pruefungenSpeichern();
-				return pruefung.toJson();
+				return "Diese Pruefung wurde aktualisiert: " + pruefung.toJson();
 			}
+			return "Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!";
 		} catch(JSONCodecException e) {
 			e.printStackTrace();
 		}
-		return "Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!";
+		return "Ein Problem ist beim Aktualisieren dieser Pruefung aufgetaucht!";
+		
 	}
 
+	
 	@Route(methode = "GET")
+	@Path(value = "/get-pruefung")
 	public String pruefungAusgeben(String key) {
 		System.out.println("The key is: " + key);
 		int index = getPruefungIndex(key);
 		if (index != -1) {
-			return pruefungen.get(index).toJson();
+			return MessageFormat.format("Die Pruefung mit modulnummer \"{0}\" : {1}" , key, pruefungen.get(index).toJson()) ;
 		}
 		return "Pruefung nicht gefunden";
 	}
@@ -118,12 +126,20 @@ public class PruefungsListe {
 			fr.close();
 		} catch(IOException e) {
     		e.printStackTrace();
-    	}
-		
+    	}	
 	}
 
-	public void allePruefungenAusgeben() {
-
+	@Path(value = "/get-pruefungen")
+	@Route(methode = "GET")
+	public String allePruefungenAusgeben( String body) {
+		String result = "";
+		if(pruefungen.size() != 0) {
+			for(Pruefung pruefung: pruefungen) {
+				result += pruefung.toJson() + "\n";
+			}
+			return result;
+		}
+		return "keine Pruefung wurde gefunden!";
 	}
     
     public static void main(String[] args) {
