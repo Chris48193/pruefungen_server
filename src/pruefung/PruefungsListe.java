@@ -22,7 +22,9 @@ public class PruefungsListe {
     		
 	        File file = new File("./src/pruefung/pruefungen.txt");
 	        // file.createNewFile();
-	        
+			if (!file.exists()) {
+				file.createNewFile();
+			}
 	        BufferedReader r = new BufferedReader(new FileReader(file));
 	        String scan;
 	        while((scan=r.readLine())!=null) {
@@ -52,13 +54,13 @@ public class PruefungsListe {
 			if (!pruefungExistiert(pruefung.getModulNummer())){
 				pruefungen.add(pruefung);
 				pruefungenSpeichern();
-				return "{'message': 'Die Pruefung wurde im datenbank hinzugefuegt', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
+				return "{\n'message': 'Die Pruefung wurde im datenbank hinzugefuegt', \n\t'status': 200, \n\t'Pruefung': " + pruefung.toJson() + "\n}";
 			}
-			return "{'message': 'Eine Pruefung mit gleicher Modulnummer existiert schon. Die ModulNummer muss eindeutig sein!', 'status': 400}";	
+			return "{\n\t'message': 'Eine Pruefung mit gleicher Modulnummer existiert schon. Die ModulNummer muss eindeutig sein!', \n\t'status': 400\n}";	
 		} catch(JSONCodecException e) {
-			return "{'message': '" + e.getMessage() + "', 'status': 400 }";
+			return "{\n\t'message': '" + e.getMessage() + "', \n\t'status': 400 \n}";
 		} catch(IOException e) {
-			return "{'message': '" + e.getMessage() + "', 'status': 500 }";
+			return "{\n\t'message': '" + e.getMessage() + "', \n\t'status': 500 \n}";
 		}
 	}
 
@@ -71,23 +73,21 @@ public class PruefungsListe {
 	public String pruefungLoeschen(String modulNummer) {
 		try {
 			int index = getPruefungIndex(modulNummer);
-			//System.out.println("Index: " + index + " ModulNr: " + modulNummer);
 			if (index != -1) {
-				Pruefung pruef = pruefungen.get(index);
+				//Pruefung pruef = pruefungen.get(index);
 				pruefungen.remove(index);
 				pruefungenSpeichern();
-				return "{'message': 'Die Pruefung wurde vom Datenbank geloescht', 'status': 204 }";
+				return "{\n\t'message': 'Die Pruefung wurde vom Datenbank geloescht',\n\t 'status': 204 \n}";
 			} 
-			return "{'message': 'Keine Pruefung mit Modulnummer " + modulNummer + " gefunden!', 'status': 400}";
+			return "{\n\t'message': 'Keine Pruefung mit Modulnummer " + modulNummer + " gefunden!',\n\t 'status': 400\n}";
 		} catch(IOException e) {
-			return "{'message': '" + e.getMessage() + "', 'status': 500}";
+			return "{\n\t'message': '" + e.getMessage() + "', \n\t'status': 500\n}";
 		}
 	}
 	
 	public int getPruefungIndex(String modulNummer) {
 		int i = 0;
 		for(Pruefung pruefung : pruefungen) {
-			// System.out.println("getModulNr: " + pruefung.getModulNummer() + " ModulNr: " + modulNummer + " index " + i);
 			if(pruefung.getModulNummer().equals(modulNummer)) {
 				return i;
 			}
@@ -106,13 +106,13 @@ public class PruefungsListe {
 			if (index != -1) {
 				pruefungen.set(index, pruefung);
 				pruefungenSpeichern();
-				return "{'message': 'Die Pruefung wurde aktualisiert', 'status': 200, 'Pruefung': " + pruefung.toJson() + "}";
+				return "{\n\t'message': 'Die Pruefung wurde aktualisiert',\n\t 'status': 200,\n\t 'Pruefung': " + pruefung.toJson() + "\n}";
 			}
-			return "{'message': 'Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!', status: 400}";
+			return "{\n\t'message': 'Die Pruefung mit der gegebenen Modulnummer existiert nicht im Datenbank!',\n\t status: 400}";
 		} catch(JSONCodecException e) {
-			return "{'message': '" + e.getMessage() + "', 'status': 400 }";
+			return "{\n\t'message': '" + e.getMessage() + "', \n\t'status': 400 \n}";
 		} catch(IOException e) {
-			return "{'message': '" + e.getMessage() + "', 'status': 500 }";
+			return "{\n\t'message': '" + e.getMessage() + "',\n\t 'status': 500 \n}";
 		}
 	}
 
@@ -122,9 +122,9 @@ public class PruefungsListe {
 	public String pruefungAusgeben(String key) {
 		int index = getPruefungIndex(key);
 		if (index != -1) {
-			return "{'message': " + pruefungen.get(index).toJson() + ", 'status': 200}";
+			return "{\n\t'message': " + pruefungen.get(index).toJson() + ", \n\t 'status': 200\n}";
 		}
-		return "{'message': 'Pruefung nicht gefunden', 'status': 404}";
+		return "{\n\t'message': 'Pruefung nicht gefunden',\n\t 'status': 404\n}";
 	}
 	
 	public void pruefungenSpeichern() throws IOException {
@@ -148,9 +148,13 @@ public class PruefungsListe {
 			for(Pruefung pruefung: pruefungen) {
 				result += pruefung.toJson() + "\n";
 			}
-			return "{'message': {" + result + "}, 'status': 200}";
+			return "{\n\t 'message': {\n\t " + result + "}, \n\t'status': 200\n}";
 		}
-		return "{'message': 'Keine Pruefung wurde angelegt', 'status': 200}";
+		return "{\n\t'message': 'Keine Pruefung wurde angelegt',\n\t' status': 200\n}";
+	}
+
+	public int getPruefungenAnzahl(){
+    	return this.pruefungen.size();
 	}
     
     /*public static void main(String[] args) {

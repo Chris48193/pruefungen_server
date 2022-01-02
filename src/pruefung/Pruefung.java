@@ -14,9 +14,6 @@ public class Pruefung implements JSONCodec{
     private int monat;
     private int jahr;
     private String ort;
-    private static final String[] MONATE = {
-        "Januar", "Februar" , "März", "April" , "Mai", "Juni" , "Juli", "August", "September" , "October" , "Dezember" 
-    };
 
     // Error messages
     private static final String MODUL_NUMMER_ERROR = "Die Modulnummer darf nicht leer oder null sein." ;
@@ -99,7 +96,7 @@ public class Pruefung implements JSONCodec{
         } catch (ParseException e ) {
             throw new JSONCodecException("ParseException: Falsches StringFormat!");
         } catch (IllegalArgumentException e) {
-            throw new JSONCodecException("IllegalArgumentExeption: " + e.getMessage());
+            throw new JSONCodecException("IllegalArgumentException: " + e.getMessage());
         }
     }
 
@@ -125,6 +122,5 @@ public class Pruefung implements JSONCodec{
     public void setModulBezeichnung(String modulBezeichnung) {
         this.modulBezeichnung = modulBezeichnung;
     }
-
 }
 
